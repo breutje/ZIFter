@@ -89,7 +89,7 @@ I'll start with the following device list:
 | AS6C4008 | 628512  | Alliance     | 32   | 4096k | 512k  | 8   |                     |
 
 
-Specificly not supported:
+Specifically not supported:
 
 | Type     | Generic | Manufacturer | Pins | bits | Words | bit | Comments             |
 | -------- | ------- | ------------ | ---- | ---- | ----- | --- | -------------------- |
