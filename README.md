@@ -1,18 +1,21 @@
-# ZIFter Mk. I
-ZIFter Mk. I is aq Shield for an Arduino Mega 2560 to functionally test some SRAMs, up to 32 pins.
-Both 300 mil and 600 mil ICs, requiring a ZIF-32 socket that can accomodate both widths.
+# ZIFter
+ZIFter is a simple, low-cost IC tester for sifting through collections of old and NOS logic and memory chips.
+It also serves as a development platform for software concepts that may eventually find their way into Orterax.
+It is implemented as a shield for an Arduino Mega 2560 tand can test IC's up to 32 pins.
+Both 300 mil and 600 mil ICs, requiring a ZIF-32 socket that can accommodate both widths.
 All compatible SRAMs have +5V (Vcc) opposite of pin-1.
 I.e. ICs are aligned to the same end of the socket, so pin-1 is always at the same position.
 The Arduino Mega 2560 is chosen because it has 5V I/O as well as enough I/O pins to avoid I/O expanders.
 This will increase the testing speed.
 Early calculations for the AS6C4008 (628512) reduce the test time from 10 minutes to less than 60 seconds.
+It is severely lacking in protection circuits and will not feature discovery algorithms.
 
 ## Switching Vcc
 Vcc is switched through a P-channel MOSFET: SI2301.
 The Proof of Concept (POC) switches through a PAN CHAN SIP-1A05 reed relay as there are no through-hole SI2301's.
 As the Arduino has CMOS outputs that are rail-to-rail, we can switch the gate directly.
 There is no need to have a pull-up (10k) resistor to Vcc or a series resistor in the gate control.
-The pin is always pin 32 of the ZIF-32 socket.
+The Vcc pin is always aligned with pin 32 of the ZIF-32 socket.
 In addition, a 3mm led (red) will be in parallel to the Vcc to show if the socket is powered.
 
 ## Switching GND
@@ -24,7 +27,7 @@ This is the pin diagonally opposite of Vcc.
 Several package sizes can been used: 16, 18, 20, 22, 24, 28 and 32 pins.
 This requires 7 connections to GND at pin 8, 9, 10, 11, 12, 14 and 16.
 This is a constraint of the design.
-ICs with exotic pin count, or non-standard Vcc and/or GND connections cannot be used by this tester.
+ICs with exotic pin layout, or non-standard Vcc and/or GND connections cannot be used by this tester.
 Fortunately, all ICs I wanted to test actually fit these constraints.
 As memories got bigger, DIP packages were abandoned as well as parallel I/O.
 There may have been 40-pin parallel SRAMs, but they cannot be tested with this tester.
