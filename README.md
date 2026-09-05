@@ -9,13 +9,15 @@ Early calculations for the AS6C4008 (628512) reduce the test time from 10 minute
 
 ## Switching Vcc
 Vcc is switched through a P-channel MOSFET: SI2301.
+The Proof of Concept (POC) switches through a PAN CHAN SIP-1A05 reed relay as there are no through-hole SI2301's.
 As the Arduino has CMOS outputs that are rail-to-rail, we can switch the gate directly.
 There is no need to have a pull-up (10k) resistor to Vcc or a series resistor in the gate control.
-The pin is always pin 32 on a 32-pin ICs.
+The pin is always pin 32 of the ZIF-32 socket.
 In addition, a 3mm led (red) will be in parallel to the Vcc to show if the socket is powered.
 
 ## Switching GND
 GND is switched through a N-channel MOSFET: SI2302.
+The POC will use a through-hole ALJ2302 (SI3202 in TO-92 package)
 Again, there is no need for pull-down or series resistors.
 The pin switched to ground is always the number of pins divided by 2.
 This is the pin diagonally opposite of Vcc.
@@ -74,7 +76,7 @@ There may have been 40-pin parallel SRAMs, but they cannot be tested with this t
 | 2102A    | 2102    | Intel        | 16   | 1k    | 1k    | 1   | separate Din/Dout   |
 | HM6508   | 6805    | Intersil     | 16   | 1k    | 1k    | 1   | different from 2102A|
  
-The most important to me now are the Lattice SR64K4 and Cypress CY7C194-20PC.
+The most important to me now, are the Lattice SR64K4 and Cypress CY7C194-20PC.
 I'll start with the following device list:
 
 | Type     | Generic | Manufacturer | Pins | bits  | Words | bit | Comments            |
