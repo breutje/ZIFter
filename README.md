@@ -32,7 +32,7 @@ Fortunately, all ICs I wanted to test actually fit these constraints.
 As memories got bigger, DIP packages were abandoned as well as parallel I/O.
 There may have been 40-pin parallel SRAMs, but they cannot be tested with this tester.
 
-
+## Device list
 | Type     | Generic | Manufacturer | Pins | bits  | Words | bit | Comments            |
 | -------- | ------- | ------------ | ---- | ----- | ----- | --- | ------------------- |
 | CY62128  | 62128   | Cypress      | 32   | 1024k | 128k  | 8   |                     |
