@@ -1,6 +1,11 @@
 # ZIFter
-ZIFter is a simple, low-cost IC tester for sifting through collections of old and NOS logic and memory chips.
+ZIFter is a simple, low-cost IC tester for sifting through collections of old and new-old-stock (NOS) logic and memory chips.
 It also serves as a development platform for software concepts that may eventually find their way into Orterax.
+
+## Status
+⚠️ **Preliminary / In Active Development**
+
+## Implementation
 It is implemented as a shield for an Arduino Mega 2560 tand can test IC's up to 32 pins.
 Both 300 mil and 600 mil ICs, requiring a ZIF-32 socket that can accommodate both widths.
 All compatible SRAMs have +5V (Vcc) opposite of pin-1.
