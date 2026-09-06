@@ -18,8 +18,10 @@ It is severely lacking in protection circuits and will not feature discovery alg
 ## Switching Vcc
 Vcc is switched through a P-channel MOSFET: SI2301.
 The Proof of Concept (POC) switches through a PAN CHAN SIP-1A05 reed relay as there are no through-hole SI2301's.
+It does need a (1N4148) flyback diode, however.
 As the Arduino has CMOS outputs that are rail-to-rail, we can switch the gate directly.
-There is no need to have a pull-up (10k) resistor to Vcc or a series resistor in the gate control.
+There is no real need to have a pull-up (10k) resistor to Vcc or a series resistor in the gate control (if the SI2301 is used)
+But if someone powers-up with a chip in the socket that may save the day.
 The Vcc pin is always aligned with pin 32 of the ZIF-32 socket.
 In addition, a 3mm led (red) will be in parallel to the Vcc to show if the socket is powered.
 
@@ -36,6 +38,20 @@ ICs with exotic pin layout, or non-standard Vcc and/or GND connections cannot be
 Fortunately, all ICs I wanted to test actually fit these constraints.
 As memories got bigger, DIP packages were abandoned as well as parallel I/O.
 There may have been 40-pin parallel SRAMs, but they cannot be tested with this tester.
+
+## Decoupling
+A 100nF ceramic capacitor is used between the permanent +5V rail and permanent GND rail.
+It is specifically not switched as its charge could potentially discharge to the chip if Vcc and GND are swiched-off.
+Probably just theoretical damage a chip, but better safe than sorry.
+A 10 μF capacitor (10V) is used to stabilize the Vcc.
+
+## Indication LEDs
+| LED | Function     | Remarks                  |
+| :-: | :----------- | :----------------------- |
+| 🟡  | DUT power    | Powered from Vcc/GND DUT |
+| 🟢  | Testing/Pass | Blinking while testing   |
+| 🔴  | Error        | Test failed              |
+
 
 ## Device list
 | Type     | Generic | Manufacturer | Pins | bits  | Words | bit | Comments            |
