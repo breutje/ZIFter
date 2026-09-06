@@ -59,7 +59,7 @@ A 10 μF capacitor (10V) is used to stabilize the Vcc.
 ### Implementation
 In order to have leave the MCU free for testing, the Green blinking is implemented with an independent blinker circuit.
 As we needed some logic, I decided to use a CD4093 quad 2-input NAND Schmitt trigger.
-One gate is used as an simple RC oscillator, about 2Hz.
+One gate is used as an simple RC oscillator, about 2 Hz.
 This requires a capacitor of 1 μF to GND and a feedback resistor of 390 kΩ to 470 kΩ.
 
 ![Oscillator circuit](./oscillator.png)
@@ -72,7 +72,7 @@ Again this output has a series resistor of 4K7 Ω to Vcc.
 
 ![4093 logic](./blinkenlights.svg)
 
-The inverters are there just to dumplicate the effect that the LEDs are tied to Vcc and not to GND.
+The inverters are there just to duplicate the effect that the LEDs are tied to Vcc and not to GND.
 The [Digital](https://github.com/hneemann/Digital) simulation file is [here](./blinkenlights.dig).
 
 
