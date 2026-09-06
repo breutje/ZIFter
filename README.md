@@ -46,11 +46,48 @@ Probably just theoretical damage a chip, but better safe than sorry.
 A 10 μF capacitor (10V) is used to stabilize the Vcc.
 
 ## Indication LEDs
-| LED | Function     | Remarks                  |
-| :-: | :----------- | :----------------------- |
-| 🟡  | DUT power    | Powered from Vcc/GND DUT |
-| 🟢  | Testing/Pass | Blinking while testing   |
-| 🔴  | Error        | Test failed              |
+| LED | Colour | Function     | Remarks                                    |
+| :-: | :----- | :----------- | :----------------------------------------- |
+| 🟡  | Yellow  |DUT power    | Powered from Vcc/GND DUT                    |
+| 🟢  | Green   | Testing/Pass | Blinking while testing, steady when PASS   |
+| 🔴  | Red     | Error        | Steady if FAIL                             |
+
+* **Yellow**: This is the power of device under test (DUT). Anode goes to switched +5V. GND is GND bus through 4K7 Ω series resistor.
+* **Green**: Blinking during testing, steady when test passed.
+* **Red**: If the test failed, steady.
+
+### Implementation
+In order to have leave the MCU free for testing, the Green blinking is implemented with an independent blinker circuit.
+As we needed some logic, I decided to use a CD4093 quad 2-input NAND Schmitt trigger.
+One gate is used as an simple RC oscillator, about 2Hz.
+This requires a capacitor of 1 μF to GND and a feedback resistor of 390 kΩ to 470 kΩ.
+
+![Oscillator circuit](./oscillator.png)
+
+This is gated with the `BLINK` output pin to `BLINK_CLOCK`,
+The `GREEN` output of the MCU is gated with `BLINK_CLOCK` to output the signal for the green LED.
+The NAND output has a series resistor of 4K7 Ω to Vcc.
+The `RED` output pin is inverted using the last NAND in the CD4093.
+Again this output has a series resistor of 4K7 Ω to Vcc.
+
+![4093 logic](./blinkenlights.svg)
+
+The inverters are there just to dumplicate the effect that the LEDs are tied to Vcc and not to GND.
+The [Digital](https://github.com/hneemann/Digital) simulation file is [here](./blinkenlights.dig).
+
+
+| Code | BLINK | GREEN | RED   | State                         |
+| :--: | :---: | :---: | :---: | :---------------------------- |
+| 0x00 |   0   |   0   |   0   |  both red and green are off   |
+| 0x01 |   0   |   0   |   1   |  only red is on               |
+| 0x02 |   0   |   1   |   0   |  only green is on             |
+| 0x03 |   0   |   1   |   1   |  both red and green are on    |
+| 0x04 |   1   |   0   |   0   |  both red and green are off   |
+| 0x05 |   1   |   0   |   1   |  only red is on               |
+| 0x06 |   1   |   1   |   0   |  green is blinking            |
+| 0x07 |   1   |   1   |   1   |  red is on, green is blinking |
+
+Only codes 0x00, 0x01, 0x02 and 0x06 make sense for ZIFter.
 
 
 ## Device list
