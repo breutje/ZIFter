@@ -72,7 +72,7 @@ Again this output has a series resistor of 4K7 Ω to Vcc.
 
 ![4093 logic](./blinkenlights.svg)
 
-The inverters are there just to duplicate the effect that the LEDs are tied to Vcc and not to GND.
+The inverters are not in the final circuit and are there just to duplicate the effect that the LEDs are tied to Vcc and not to GND.
 The [Digital](https://github.com/hneemann/Digital) simulation file is [here](./blinkenlights.dig).
 
 
