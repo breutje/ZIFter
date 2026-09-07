@@ -17,17 +17,13 @@ ZIFter is severely lacking in protection circuits and will not feature discovery
 
 ## Switching Vcc
 Vcc will be switched through a P-channel MOSFET: SI2301.
-The Proof of Concept (POC) switches through a PAN CHAN SIP-1A05 reed relay as there are no through-hole SI2301 ans the POC is build on a proto board.
-It does need a (1N4148) flyback diode, however.
-On the finished PCB, we can switch the gate of the SI2301 directly.
-There is no real need to have a pull-up (10k) resistor to Vcc or a series resistor in the gate control.
-But if someone powers-up with a chip in the socket that may save the day.
+A pull-up (10k) resistor from the gate to Vcc is used to make sure Vcc is off.
+This may be important if a user powers-up with a device in the ZIF-32.
 The Vcc pin is always aligned with pin 32 of the ZIF-32 socket.
 In addition, a yellow 3mm led will be in parallel to the Vcc to show if the socket is powered.
 
 ## Switching GND
-GND is switched through a N-channel MOSFET: SI2302.
-The POC will use a through-hole ALJ2302 instead (SI3202 in TO-92 package).
+GND is switched through a N-channel MOSFET: SI2302. 
 Again, there is no need for pull-down or series resistors.
 The pin switched to ground is always the number of pins divided by 2.
 This is the pin diagonally opposite of Vcc.
@@ -36,9 +32,7 @@ Note that 26 and 30 pin packages are missing (as well as 34 and 38, but they are
 This requires 8 connections to GND at pin 7, 8, 9, 10, 11, 12, 14 and 16.
 This is a constraint of the design.
 ICs with exotic pin layout, or non-standard Vcc and/or GND connections cannot be used by this tester.
-Fortunately, all ICs I wanted to test actually fit these constraints.
-As memories got bigger, DIP packages were abandoned as well as parallel I/O.
-There may have been 40-pin parallel SRAMs, but they cannot be tested with this tester.
+
 
 ## Decoupling
 A 100nF ceramic capacitor is used between the permanent +5V rail and permanent GND rail.
@@ -57,11 +51,12 @@ A 10 μF capacitor (10V) is used to help stabilize Vcc.
 * **Green**: Blinking during testing, steady when the test finished and passed.
 * **Red**: If the test failed, steady.
 
+
 ### Implementation
 In order to have leave the MCU free for testing, the Green blinking is implemented with an independent blinker circuit.
 As we needed some logic, I decided to use a CD4093 quad 2-input NAND Schmitt trigger.
 One gate is used as an simple RC oscillator, about 1 Hz.
-This requires a capacitor of 1 μF to GND and a feedback resistor of 680 kΩ to 1 MΩ.
+This requires a capacitor of 2.2 μF to GND and a feedback resistor of 1 MΩ.
 
 ![Oscillator circuit](./oscillator.png)
 
@@ -94,11 +89,24 @@ Only codes 0x00, 0x01, 0x02 and 0x06 make sense for ZIFter.
 High-side current/voltage sensing is mandatory for Orterax and a useful feature for ZIFter.
 It can be used to detect over-current and switch off Vcc long before a poly-fuse is tripped.
 Also, it can be used to differentiate between logic compatible NMOS and CMOS variants.
-The INA219 I²C current and voltage sensor can be used. Its not in a DIP package (SOT-23-5) but can be soldered on a adapter PCB for the POC.
+Additionally it can be used to check the number of pins of the DUT if current sensing is available.
+Apply Vcc, then switch pins 16, 14, 12, 11, 10, 9, 8 and 7 to detect if a device is present.
+The INA219 I²C current and voltage sensor can be used.
+The INA219 is not available in a DIP package (SOT-23-5) but can be soldered on a adapter PCB for the POC.
 
-## Device list
-| Type     | Generic | Manufacturer | Pins | bits  | Words | bit | Comments            |
-| -------- | ------- | ------------ | ---- | ----- | ----- | --- | ------------------- |
+
+## Proof of concept
+The proof of concept (POC) is build on a Arduino Mega protoboard.
+As it is rather difficult to solder SMD components on a protoboard with 2.54 mm spacing, through-hole components are used.
+The Vcc MOSFET (SI2301) is replaced by a SIP-1A05 reed relay.
+This does require a (1N4148/1N914) flyback diode.
+The GND MOSFETs (SI2302) are replaced with the through-hole ALJ2302 instead (SI3202 in TO-92 package).
+The POC may eventually get a PCB, but as protection is totally absent, it may be better to put all effort in Orterax.
+
+
+## Device list SRAM
+| IC       | Generic | Manufacturer | Pins | bits  | Words | bit | Comments            |
+| :------- | :------ | :----------- | :--: | ----: | ----: | :-: | :------------------ |
 | CY62128  | 62128   | Cypress      | 32   | 1024k | 128k  | 8   |                     |
 | 628512   | 628512  | Various      | 32   | 4096k | 512k  | 8   |                     |
 | AS6C4008 | 628512  | Alliance     | 32   | 4096k | 512k  | 8   |                     |
@@ -143,35 +151,34 @@ The INA219 I²C current and voltage sensor can be used. Its not in a DIP package
 | 2102A    | 2102    | Intel        | 16   | 1k    | 1k    | 1   | separate Din/Dout   |
 | HM6508   | 6805    | Intersil     | 16   | 1k    | 1k    | 1   | different from 2102A|
  
-The most important to me now, are the Lattice SR64K4 and Cypress CY7C194-20PC.
-I'll start with the following device list:
+We'll start with the following device list:
 
-| Type     | Generic | Manufacturer | Pins | bits  | Words | bit | Comments            |
-| -------- | ------- | ------------ | ---- | ----- | ----- | --- | ------------------- |
-| SR64K4   |         | Lattice      | 11   | 64k   | 16k   | 4   |                     |
-| CY7C194  |         | Cypress      | 24   | 256k  | 64k   | 4   |                     |
-| AS6C4008 | 628512  | Alliance     | 32   | 4096k | 512k  | 8   |                     |
+| IC       | Type    | Pins | Comments                          |
+| :------- | :------ | :--: | :-------------------------------- |
+| AS6C4008 | SRAM    | 32   | Alliance, 4096 kbit (512k x 8)    |
+| CY7C194  | SRAM    | 24   | Cypress, 256 kbit (64k x 4)       |
+| SR64K4   | SRAM    | 11   | Lattice, 64 kbit (16k x 4)        |
+| 74LS00   | TTL     | 14   | Various, quad two-input nand gate |
+| CD4011   | CMOS    | 14   | Various, quad two-inpyt nand gate |
 
 
-Specifically not supported SRAMS:
+Specifically **not** supported ICs:
 
-| Type     | Generic | Manufacturer | Pins | bits | Words | bit | Comments             |
-| -------- | ------- | ------------ | ---- | ---- | ----- | --- | -------------------- |
-| TC5501   |         | Toshiba      | 22   | 1k   | 256   | 4   | non standard Vcc/GND |
-| 2602     |         | Signetics    | 16   | 1k   | 1024  | 1   | non standard Vcc/GND |
+| IC       | Type    | Pins | Comments                                |
+| :------- | :------ | :--: | :-------------------------------------- |
+| TC5501   | SRAM    | 22   | Toshiba, 256x4 GND=8 [^tc5501]          |
+| 2602     | SRAM    | 16   | Signetics, 1024x1, Vcc=10, GND=9        |
+| 7473     | TTL     | 14   | dual JK flip-flop, Vcc=4, GND=11        |
+| 7475     | TTL     | 16   | 4-bit bi-stable latch, Vcc=5, GND=12    |
+| 7476     | TTL     | 16   | dual JK flip-flop, Vcc=5, GND=13        |
+| 7490     | TTL     | 14   | decade counter, Vcc=5, GND=10           |
+| 7492     | TTL     | 14   | divide-by-twelve counter, Vcc=5, GND=10 |
+| 7493     | TTL     | 14   | 4-bit binary counter. Vcc=5, GND=10     |
+| 4049     | CMOS    | 16   | hex inverter, Vcc=1, GND=8 [^pin1]      |
+| 4050     | CMOS    | 16   | hex non-inverting buffer, Vcc=1, GND=8  |
 
-Specifically not supported 74xx and 40xx logic:
-
-| Type     | Pins | Vcc  | GND  | Remarks                 |
-| -------- | :--- | :--: | :--: | ----------------------- |
-| 7473     | 14   |  4   | 11   |                         |
-| 7475     | 16   |  5   | 12   |                         |
-| 7476     | 16   |  5   | 13   |                         |
-| 7490     | 14   |  5   | 10   |                         |
-| 7492     | 14   |  5   | 10   |                         |
-| 7493     | 14   |  5   | 10   |                         |
-| 4049     | 16   |  1   | 8    |                         |
-| 4050     | 16   |  1   | 8    |                         |
+[^tc5501]: As Vcc (Vdd) is opposite pin 1 and pin 8 _may_ be switched to GND, we could possibly promote this to **supported**.
+[^pin1]: In order to support the popular CMOS 4049/4050 ICs, we need to switch Vcc to pin 1 (pin 16 is NC).
 
 ```
 # ZIF pin 1..32 -> Arduino Mega digital pin. Wire once, never touch again.
