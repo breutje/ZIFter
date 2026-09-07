@@ -43,7 +43,7 @@ There may have been 40-pin parallel SRAMs, but they cannot be tested with this t
 ## Decoupling
 A 100nF ceramic capacitor is used between the permanent +5V rail and permanent GND rail.
 It is specifically not switched as its charge could potentially discharge to the chip if Vcc and GND are swiched-off.
-Probably just theoretical damage a chip, but better safe than sorry.
+Probably just _theoretical_ damage a chip, but better safe than sorry.
 A 10 μF capacitor (10V) is used to help stabilize Vcc.
 
 ## Indication LEDs
@@ -54,14 +54,14 @@ A 10 μF capacitor (10V) is used to help stabilize Vcc.
 | 🔴  | Red     | Error        | Steady if FAIL                             |
 
 * **Yellow**: This is the power of device under test (DUT). Anode goes to switched +5V. GND is GND bus through 4K7 Ω series resistor.
-* **Green**: Blinking during testing, steady when the test passed.
+* **Green**: Blinking during testing, steady when the test finished and passed.
 * **Red**: If the test failed, steady.
 
 ### Implementation
 In order to have leave the MCU free for testing, the Green blinking is implemented with an independent blinker circuit.
 As we needed some logic, I decided to use a CD4093 quad 2-input NAND Schmitt trigger.
-One gate is used as an simple RC oscillator, about 2 Hz.
-This requires a capacitor of 1 μF to GND and a feedback resistor of 390 kΩ to 470 kΩ.
+One gate is used as an simple RC oscillator, about 1 Hz.
+This requires a capacitor of 1 μF to GND and a feedback resistor of 680 kΩ to 1 MΩ.
 
 ![Oscillator circuit](./oscillator.png)
 
@@ -73,7 +73,7 @@ Again this output has a series resistor of 4K7 Ω to Vcc.
 
 ![4093 logic](./blinkenlights.svg)
 
-The inverters are not in the final circuit and are there just to duplicate the effect that the LEDs are tied to Vcc and not to GND.
+The inverters are not in the final circuit and are there just to duplicate the effect that the LEDs are tied to Vcc and not to GND (i.e. on when the input is low).
 The [Digital](https://github.com/hneemann/Digital) simulation file is [here](./blinkenlights.dig).
 
 
@@ -92,7 +92,7 @@ Only codes 0x00, 0x01, 0x02 and 0x06 make sense for ZIFter.
 
 ## Current sensing
 High-side current/voltage sensing is mandatory for Orterax and a useful feature for ZIFter.
-It can be used to detect overcurrent and switch off Vcc long before a polyfuse is tripped.
+It can be used to detect over-current and switch off Vcc long before a poly-fuse is tripped.
 Also, it can be used to differentiate between logic compatible NMOS and CMOS variants.
 The INA219 I²C current and voltage sensor can be used. Its not in a DIP package (SOT-23-5) but can be soldered on a adapter PCB for the POC.
 
@@ -153,13 +153,25 @@ I'll start with the following device list:
 | AS6C4008 | 628512  | Alliance     | 32   | 4096k | 512k  | 8   |                     |
 
 
-Specifically not supported:
+Specifically not supported SRAMS:
 
 | Type     | Generic | Manufacturer | Pins | bits | Words | bit | Comments             |
 | -------- | ------- | ------------ | ---- | ---- | ----- | --- | -------------------- |
 | TC5501   |         | Toshiba      | 22   | 1k   | 256   | 4   | non standard Vcc/GND |
 | 2602     |         | Signetics    | 16   | 1k   | 1024  | 1   | non standard Vcc/GND |
 
+Specifically not supported 74xx and 40xx logic:
+
+| Type     | Pins | Vcc  | GND  | Remarks                 |
+| -------- | :--- | :--: | :--: | ----------------------- |
+| 7473     | 14   |  4   | 11   |                         |
+| 7475     | 16   |  5   | 12   |                         |
+| 7476     | 16   |  5   | 13   |                         |
+| 7490     | 14   |  5   | 10   |                         |
+| 7492     | 14   |  5   | 10   |                         |
+| 7493     | 14   |  5   | 10   |                         |
+| 4049     | 16   |  1   | 8    |                         |
+| 4050     | 16   |  1   | 8    |                         |
 
 ```
 # ZIF pin 1..32 -> Arduino Mega digital pin. Wire once, never touch again.
