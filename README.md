@@ -6,33 +6,34 @@ It also serves as a development platform for software concepts that may eventual
 ⚠️ **Preliminary / In Active Development**
 
 ## Implementation
-It is implemented as a shield for an Arduino Mega 2560 tand can test IC's up to 32 pins.
+It is implemented as a shield for an Arduino Mega 2560 and can test IC's up to 32 pins.
 Both 300 mil and 600 mil ICs, requiring a ZIF-32 socket that can accommodate both widths.
-All compatible SRAMs have +5V (Vcc) opposite of pin-1.
+All compatible ICs have +5V (Vcc) opposite of pin-1.
 I.e. ICs are aligned to the same end of the socket, so pin-1 is always at the same position.
 The Arduino Mega 2560 is chosen because it has 5V I/O as well as enough I/O pins to avoid I/O expanders.
 This will increase the testing speed.
 Early calculations for the AS6C4008 (628512) reduce the test time from 10 minutes to less than 60 seconds.
-It is severely lacking in protection circuits and will not feature discovery algorithms.
+ZIFter is severely lacking in protection circuits and will not feature discovery algorithms.
 
 ## Switching Vcc
-Vcc is switched through a P-channel MOSFET: SI2301.
-The Proof of Concept (POC) switches through a PAN CHAN SIP-1A05 reed relay as there are no through-hole SI2301's.
+Vcc will be switched through a P-channel MOSFET: SI2301.
+The Proof of Concept (POC) switches through a PAN CHAN SIP-1A05 reed relay as there are no through-hole SI2301 ans the POC is build on a proto board.
 It does need a (1N4148) flyback diode, however.
-As the Arduino has CMOS outputs that are rail-to-rail, we can switch the gate directly.
-There is no real need to have a pull-up (10k) resistor to Vcc or a series resistor in the gate control (if the SI2301 is used)
+On the finished PCB, we can switch the gate of the SI2301 directly.
+There is no real need to have a pull-up (10k) resistor to Vcc or a series resistor in the gate control.
 But if someone powers-up with a chip in the socket that may save the day.
 The Vcc pin is always aligned with pin 32 of the ZIF-32 socket.
-In addition, a 3mm led (red) will be in parallel to the Vcc to show if the socket is powered.
+In addition, a yellow 3mm led will be in parallel to the Vcc to show if the socket is powered.
 
 ## Switching GND
 GND is switched through a N-channel MOSFET: SI2302.
-The POC will use a through-hole ALJ2302 (SI3202 in TO-92 package)
+The POC will use a through-hole ALJ2302 instead (SI3202 in TO-92 package).
 Again, there is no need for pull-down or series resistors.
 The pin switched to ground is always the number of pins divided by 2.
 This is the pin diagonally opposite of Vcc.
-Several package sizes can been used: 16, 18, 20, 22, 24, 28 and 32 pins.
-This requires 7 connections to GND at pin 8, 9, 10, 11, 12, 14 and 16.
+Several package sizes can been used: 14, 16, 18, 20, 22, 24, 28 and 32 pins.
+Note that 26 and 30 pin packages are missing (as well as 34 and 38, but they are larger than 32).
+This requires 8 connections to GND at pin 7, 8, 9, 10, 11, 12, 14 and 16.
 This is a constraint of the design.
 ICs with exotic pin layout, or non-standard Vcc and/or GND connections cannot be used by this tester.
 Fortunately, all ICs I wanted to test actually fit these constraints.
@@ -43,17 +44,17 @@ There may have been 40-pin parallel SRAMs, but they cannot be tested with this t
 A 100nF ceramic capacitor is used between the permanent +5V rail and permanent GND rail.
 It is specifically not switched as its charge could potentially discharge to the chip if Vcc and GND are swiched-off.
 Probably just theoretical damage a chip, but better safe than sorry.
-A 10 μF capacitor (10V) is used to stabilize the Vcc.
+A 10 μF capacitor (10V) is used to help stabilize Vcc.
 
 ## Indication LEDs
 | LED | Colour | Function     | Remarks                                    |
 | :-: | :----- | :----------- | :----------------------------------------- |
-| 🟡  | Yellow  |DUT power    | Powered from Vcc/GND DUT                    |
+| 🟡  | Yellow  | DUT power    | Powered from Vcc/GND DUT                   |
 | 🟢  | Green   | Testing/Pass | Blinking while testing, steady when PASS   |
 | 🔴  | Red     | Error        | Steady if FAIL                             |
 
 * **Yellow**: This is the power of device under test (DUT). Anode goes to switched +5V. GND is GND bus through 4K7 Ω series resistor.
-* **Green**: Blinking during testing, steady when test passed.
+* **Green**: Blinking during testing, steady when the test passed.
 * **Red**: If the test failed, steady.
 
 ### Implementation
@@ -64,7 +65,7 @@ This requires a capacitor of 1 μF to GND and a feedback resistor of 390 kΩ to 
 
 ![Oscillator circuit](./oscillator.png)
 
-This is gated with the `BLINK` output pin to `BLINK_CLOCK`,
+This is gated with a NAND with the `BLINK` output pin to create `BLINK_CLOCK`.
 The `GREEN` output of the MCU is gated with `BLINK_CLOCK` to output the signal for the green LED.
 The NAND output has a series resistor of 4K7 Ω to Vcc.
 The `RED` output pin is inverted using the last NAND in the CD4093.
@@ -89,6 +90,11 @@ The [Digital](https://github.com/hneemann/Digital) simulation file is [here](./b
 
 Only codes 0x00, 0x01, 0x02 and 0x06 make sense for ZIFter.
 
+## Current sensing
+High-side current/voltage sensing is mandatory for Orterax and a useful feature for ZIFter.
+It can be used to detect overcurrent and switch off Vcc long before a polyfuse is tripped.
+Also, it can be used to differentiate between logic compatible NMOS and CMOS variants.
+The INA219 I²C current and voltage sensor can be used. Its not in a DIP package (SOT-23-5) but can be soldered on a adapter PCB for the POC.
 
 ## Device list
 | Type     | Generic | Manufacturer | Pins | bits  | Words | bit | Comments            |
