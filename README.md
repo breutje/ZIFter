@@ -26,7 +26,7 @@ Vcc is switched through a P-channel MOSFET: SI2301.
 A pull-up resistor (10 kΩ) from the gate to Vcc makes sure the MOSFET is off by default.
 This may be important if a user powers up with a device in the ZIF-32 socket.
 The Vcc pin is always aligned with pin 32 of the ZIF-32 socket.
-A yellow 3 mm LED is placed in parallel with Vcc to show whether the socket is powered.
+A blue 3 mm LED is placed in parallel with Vcc to show whether the socket is powered.
 
 
 ## Switching GND
@@ -51,11 +51,11 @@ A 10 μF capacitor (10V) is used to help stabilise Vcc.
 ## Indication LEDs
 | LED | Colour | Function     | Remarks                                   |
 | :-: | :----- | :----------- | :---------------------------------------- |
-| 🟡  | Yellow | DUT power    | Powered from the DUT Vcc/GND              |
+| 🔵  | Blue   | DUT power    | Powered from the DUT Vcc/GND              |
 | 🟢  | Green  | Testing/Pass | Blinking while testing, steady when PASS  |
 | 🔴  | Red    | Error        | Steady if FAIL                            |
 
-* **Yellow**: This indicates power to the device under test (DUT). The anode goes to switched +5V, the cathode to the GND bus through a 4k7 series resistor.
+* **Blue**: This indicates power to the device under test (DUT). The anode goes to switched +5V, the cathode to the GND bus through a 4k7 series resistor.
 * **Green**: Blinking during testing, steady when the test has finished and passed.
 * **Red**: Steady if the test failed.
 
@@ -69,10 +69,10 @@ A capacitor of 2.2 μF to GND and a feedback resistor of 1 MΩ give a reasonable
 ![Oscillator circuit](./oscillator.png)
 
 The oscillator output is NANDed with the `BLINK` output pin of the MCU to create `BLINK_CLOCK`.
-The `GREEN` output of the MCU is then NANDed with `BLINK_CLOCK` to drive the green LED.
-That NAND output has a 4k7 series resistor to the LED, which is tied to Vcc.
+The `BLUE` output of the MCU is then NANDed with `BLINK_CLOCK` to drive the green LED. 
+That NAND output has a 3k3 series resistor to the LED, which is tied to Vcc.
 The `RED` output pin is inverted using the last NAND in the CD4093.
-Again, this output has a 4k7 series resistor to the LED, which is tied to Vcc.
+Again, this output has a 3k3 series resistor to the LED, which is tied to Vcc.
 
 ![4093 logic](./blinkenlights.svg)
 
