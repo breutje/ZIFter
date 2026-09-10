@@ -1,7 +1,9 @@
 # ZIFter
 ZIFter is a simple, low-cost IC tester for sifting through collections of old and new-old-stock (NOS) logic and memory chips.
-It also serves as a development platform for software concepts that may eventually find their way into Orterax.
+It also serves as a development platform for software concepts that may eventually find their way into _Orterax_.
 It lacks protection circuitry and will not feature IC discovery algorithms.
+
+![AI Impression](ZIFter-ai-impression.jpg)
 
 
 ## Status
