@@ -69,7 +69,7 @@ A capacitor of 2.2 μF to GND and a feedback resistor of 1 MΩ give a reasonable
 ![Oscillator circuit](./oscillator.png)
 
 The oscillator output is NANDed with the `BLINK` output pin of the MCU to create `BLINK_CLOCK`.
-The `BLUE` output of the MCU is then NANDed with `BLINK_CLOCK` to drive the green LED. 
+The `GREEN` output of the MCU is then NANDed with `BLINK_CLOCK` to drive the green LED. 
 That NAND output has a 3k3 series resistor to the LED, which is tied to Vcc.
 The `RED` output pin is inverted using the last NAND in the CD4093.
 Again, this output has a 3k3 series resistor to the LED, which is tied to Vcc.
@@ -177,18 +177,18 @@ We'll start with the following device list:
 
 Specifically **not** supported ICs:
 
-| IC       | Type    | Pins | Comments                                |
-| :------- | :------ | :--: | :-------------------------------------- |
-| TC5501   | SRAM    | 22   | Toshiba, 256x4, Vcc=22, GND=8 [^tc5501] |
-| 2602     | SRAM    | 16   | Signetics, 1024x1, Vcc=10, GND=9        |
-| 7473     | TTL     | 14   | dual JK flip-flop, Vcc=4, GND=11        |
-| 7475     | TTL     | 16   | 4-bit bistable latch, Vcc=5, GND=12     |
-| 7476     | TTL     | 16   | dual JK flip-flop, Vcc=5, GND=13        |
-| 7490     | TTL     | 14   | decade counter, Vcc=5, GND=10           |
-| 7492     | TTL     | 14   | divide-by-twelve counter, Vcc=5, GND=10 |
-| 7493     | TTL     | 14   | 4-bit binary counter, Vcc=5, GND=10     |
-| 4049     | CMOS    | 16   | hex inverter, Vcc=1, GND=8 [^pin1]      |
-| 4050     | CMOS    | 16   | hex non-inverting buffer, Vcc=1, GND=8  |
+| IC       | Type    | Pins | Comments                                       |
+| :------- | :------ | :--: | :--------------------------------------------- |
+| TC5501   | SRAM    | 22   | Toshiba, 256x4, Vcc=22, GND=8 [^tc5501]        |
+| 2602     | SRAM    | 16   | Signetics, 1024x1, Vcc=10, GND=9               |
+| 7473     | TTL     | 14   | dual JK flip-flop, Vcc=4, GND=11               |
+| 7475     | TTL     | 16   | 4-bit bistable latch, Vcc=5, GND=12            |
+| 7476     | TTL     | 16   | dual JK flip-flop, Vcc=5, GND=13               |
+| 7490     | TTL     | 14   | decade counter, Vcc=5, GND=10                  |
+| 7492     | TTL     | 14   | divide-by-twelve counter, Vcc=5, GND=10        |
+| 7493     | TTL     | 14   | 4-bit binary counter, Vcc=5, GND=10            |
+| 4049     | CMOS    | 16   | hex inverter, Vcc=1, GND=8 [^pin1]             |
+| 4050     | CMOS    | 16   | hex non-inverting buffer, Vcc=1, GND=8 [^pin1] |
 
 [^tc5501]: Pin 8 _may_ be switched to GND, so we could possibly promote this to **supported**.  
 [^pin1]: In order to support the popular CMOS 4049/4050 ICs, we need to switch Vcc to pin 1 (pin 16 is NC).  
