@@ -105,6 +105,12 @@ The INA219 I²C current and voltage sensor can be used.
 The INA219 is not available in a DIP package (only SOT-23-8 or SOIC-8),
 but it can be soldered onto an adapter PCB for the POC.
 
+**NOTE**: INA219 is probaly overkill. It is also expensive. A better choice is the ZXCT1022.
+Also SOT-23, but significantly cheaper. It outputs a voltage that can be converted by the atmega2560's ADC.
+A shunt resistor of 0.1Ω (100mΩ) will extend the current measuring range up to 500mA at 0.5mA per ADC count.
+In addition a simple voltage divider can keep track of Vcc.
+E.g. two 10kΩ 1% resistors. Make sure to use the internal bandgap 2.56V reference, not the Vcc)
+
 
 ## Proof of concept
 The proof of concept (POC) is built on an Arduino Mega protoboard.
